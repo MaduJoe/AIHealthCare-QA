@@ -53,7 +53,7 @@ sequenceDiagram
 ## 핵심 구성 요소
 
 ### 프로젝트 구조 
-
+```bash
 LunitCare QA 시스템
 ├── mock_server/         # 실제 AI 기반 의료 영상 분석 API
 │   ├── app.py           # Lunit ViT 모델 통합 API 서버
@@ -68,7 +68,7 @@ LunitCare QA 시스템
 │
 ├── ui_app.py            # 의료진을 위한 진단 보조 UI 애플리케이션
 └── e2e_tests/           # 엔드투엔드 테스트 (Playwright)
-
+```
 ### 1. API 테스트 (`api_tests/`)
 - `pytest` + `requests`를 활용한 REST API 자동화 테스트
 - 다양한 이미지 입력에 대한 응답 검증
