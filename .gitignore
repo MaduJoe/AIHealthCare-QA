@@ -50,3 +50,7 @@ htmlcov/
 .vscode/
 *.swp
 *.swo 
+
+# ETC 
+*.docx
+temp/

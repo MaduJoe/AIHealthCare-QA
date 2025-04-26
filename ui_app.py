@@ -118,7 +118,7 @@ with tabs[0]:  # 이미지 분석 탭
         
         # 이미지 업로드 인터페이스 개선
         st.markdown("<div class='upload-area'>", unsafe_allow_html=True)
-        uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png", "dcm"], label_visibility="collapsed")
+        uploaded_file = st.file_uploader("이미지 파일 선택", type=["jpg", "jpeg", "png", "dcm"], label_visibility="collapsed")
         if not uploaded_file:
             st.markdown("이미지 파일을 업로드하거나 끌어다 놓으세요<br>지원 형식: JPG, JPEG, PNG, DICOM", unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
