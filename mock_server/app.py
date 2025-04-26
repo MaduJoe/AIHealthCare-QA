@@ -22,5 +22,18 @@ def analyze_error():
         "message": "Internal server error simulated for testing"
     }), 500
 
+@app.route("/analyze/metadata", methods=["GET"])
+def metadata():
+    return jsonify({
+        "version": "1.2.0",
+        "model_id": "LUNG-CT-V2",
+        "last_updated": "2023-09-01",
+        "regulatory_status": "연구용(Research Use Only)",
+        "intended_use": "폐 질환 판독 보조",
+        "supported_modalities": ["X-Ray", "CT"],
+        "sensitivity": 0.92,
+        "specificity": 0.89
+    })
+
 if __name__ == "__main__":
     app.run(debug=True)

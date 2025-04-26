@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Test data (exclude large binary files)
+api_tests/test_data/*.jpg
+api_tests/test_data/*.png
+api_tests/test_data/*.dcm
+!api_tests/test_data/README.md
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
+
+# Local environment
+.env
+.venv
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo 

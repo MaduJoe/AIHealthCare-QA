@@ -1,1 +1,2 @@
-This is not an image file. Used for error case testing.
+This is not an image file.
+It's used to test error handling in the API when a non-image file is uploaded.

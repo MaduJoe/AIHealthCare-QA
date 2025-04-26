@@ -1,0 +1,27 @@
+{
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string"
+    },
+    "result": {
+      "type": "object",
+      "properties": {
+        "abnormality_score": {
+          "type": "number"
+        },
+        "flags": {
+          "type": "array"
+        }
+      },
+      "required": [
+        "abnormality_score",
+        "flags"
+      ]
+    }
+  },
+  "required": [
+    "status",
+    "result"
+  ]
+}

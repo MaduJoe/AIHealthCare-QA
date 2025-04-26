@@ -92,6 +92,7 @@ pip install -r requirements.txt
 # E2E 테스트 설치
 cd e2e_tests
 npm install
+npx playwright install
 ```
 
 ### 실행
