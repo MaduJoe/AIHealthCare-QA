@@ -53,6 +53,7 @@ sequenceDiagram
 ## 핵심 구성 요소
 
 ### 프로젝트 구조 
+
 LunitCare QA 시스템
 ├── mock_server/         # 실제 AI 기반 의료 영상 분석 API
 │   ├── app.py           # Lunit ViT 모델 통합 API 서버
