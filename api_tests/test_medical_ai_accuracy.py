@@ -40,6 +40,7 @@ def test_model_metadata_compliance():
 
 def test_abnormal_detection_accuracy():
     """Test the model's ability to correctly identify abnormal images"""
+    """의료 AI의 이상 감지 정확도 테스트"""
     response = requests.post(API_URL, 
                            files={"image": open(f"{TEST_DATA_DIR}/abnormal_chest_xray.jpg", "rb")})
     assert response.status_code == 200

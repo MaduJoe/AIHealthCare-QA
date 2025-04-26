@@ -35,6 +35,7 @@ REGULATORY_REQUIREMENTS = {
 
 def test_model_versioning_compliance():
     """Test compliance with regulatory versioning requirements"""
+    """모델 버전 관리 규제 준수 여부 테스트"""
     response = requests.get(METADATA_URL)
     assert response.status_code == 200
     metadata = response.json()

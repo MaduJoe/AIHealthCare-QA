@@ -59,7 +59,15 @@ pytest
 
 3. 특정 테스트 모듈 실행:
 ```bash
-pytest test_medical_ai_accuracy.py
+# 의료 AI 정확도 테스트 실행
+cd api_tests
+pytest test_medical_ai_accuracy.py -v
+
+# 임상 관련성 테스트 실행
+pytest test_clinical_relevance.py -v
+
+# 규제 준수 테스트 실행
+pytest test_regulatory_compliance.py -v
 ```
 
 4. 세부 출력으로 실행:

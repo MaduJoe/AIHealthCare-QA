@@ -92,6 +92,7 @@ def test_confidence_calibration():
     Test that reported confidence levels are properly calibrated against
     clinically determined ground truth
     """
+    """의료 AI 신뢰도 보정 적절성 테스트"""
     response = requests.post(API_URL, 
                            files={"image": open(f"{TEST_DATA_DIR}/abnormal_chest_xray.jpg", "rb")})
     assert response.status_code == 200
