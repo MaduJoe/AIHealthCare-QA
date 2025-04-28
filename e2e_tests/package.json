@@ -1,16 +1,17 @@
 {
-  "name": "lunitcare-e2e-tests",
+  "name": "lunitcare-qa-e2e-tests",
   "version": "1.0.0",
-  "description": "End-to-end tests for LunitCare medical imaging application",
-  "main": "index.js",
+  "description": "LunitCare QA E2E 테스트 스위트",
   "scripts": {
-    "test": "playwright test"
-  },
-  "dependencies": {
-    "@playwright/test": "^1.40.0",
-    "typescript": "^5.3.2"
+    "test": "playwright test",
+    "test:chrome": "playwright test --project=chromium",
+    "test:firefox": "playwright test --project=firefox",
+    "test:safari": "playwright test --project=webkit",
+    "test:mobile": "playwright test --project=mobile-chrome",
+    "report": "playwright show-report",
+    "debug": "playwright test --debug"
   },
   "devDependencies": {
-    "@types/node": "^20.10.0"
+    "@playwright/test": "^1.38.0"
   }
 } 

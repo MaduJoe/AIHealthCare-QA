@@ -1,102 +1,65 @@
 from flask import Flask, request, jsonify
-import torch
-import timm
+from transformers import AutoFeatureExtractor, AutoModelForImageClassification
 from PIL import Image
+import torch
 import io
-import os
-from dotenv import load_dotenv
-load_dotenv()
+import time
 
 app = Flask(__name__)
 
-# HuggingFace API 설정
-HUGGINGFACE_API_URL = "https://api-inference.huggingface.co/models/1aurent/vit_small_patch8_224.lunit_dino"
-HUGGINGFACE_API_TOKEN = os.getenv("HUGGINGFACE_API_TOKEN")
+MODEL_NAME = "google/vit-base-patch16-224"
 
-headers = {
-    "Authorization": f"Bearer {HUGGINGFACE_API_TOKEN}"
-}
+extractor = AutoFeatureExtractor.from_pretrained(MODEL_NAME)
+model = AutoModelForImageClassification.from_pretrained(MODEL_NAME)
 
-# 모델 로드 함수
-def get_model():
-    """의료 AI 모델 로드 및 캐싱"""
-    if not hasattr(get_model, 'model'):
-        print("모델을 다운로드하고 로드하는 중...")
-        model = timm.create_model(
-            "hf-hub:1aurent/vit_small_patch8_224.lunit_dino",
-            pretrained=True
-        )
-        model.eval()
-        
-        data_config = timm.data.resolve_model_data_config(model)
-        transforms = timm.data.create_transform(**data_config, is_training=False)
-        
-        get_model.model = model
-        get_model.transforms = transforms
-        print("모델 로드 완료!")
-    
-    return get_model.model, get_model.transforms
+# 디바이스 설정 (GPU 사용 가능 시)
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model.to(device)
+model.eval()
 
 @app.route("/analyze", methods=["POST"])
-def analyze():
-    if "image" not in request.files:
-        return jsonify({"error": "No image provided"}), 400
+def analyze_image():
+    start_time = time.time()
 
-    image_file = request.files["image"]
-    
+    if "file" not in request.files:
+        print("파일이 없습니다!")  # 🔥 디버그용 출력
+        return jsonify({"status": "error", "message": "No file uploaded"}), 400
+
+    file = request.files["file"]
+    print(f"업로드된 파일 이름: {file.filename}")  # 🔥 디버그용 출력
+
     try:
-        img = Image.open(image_file.stream).convert('RGB')
-        
-        model, transforms = get_model()
-        
-        img_tensor = transforms(img).unsqueeze(0)
-        
-        with torch.no_grad():
-            features = model(img_tensor)
-        
-        embedding_norm = torch.norm(features, dim=1).item()
-        normalized_score = min(100, max(0, embedding_norm * 10))
-        
-        if "normal" in image_file.filename.lower():
-            normalized_score = min(normalized_score, 30)
-            flags = []
-        elif "abnormal" in image_file.filename.lower():
-            normalized_score = max(normalized_score, 70)
-            flags = ["nodule", "opacity"]
-        else:
-            if normalized_score > 70:
-                flags = ["simulated finding", "opacity"]
-            elif normalized_score > 40:
-                flags = ["simulated finding"]
-            else:
-                flags = []
-        
-        result = {
-            "status": "success",
-            "result": {
-                "abnormality_score": round(normalized_score, 1),
-                "flags": flags
-            }
-        }
-        
-        return jsonify(result)
-        
+        image = Image.open(io.BytesIO(file.read())).convert("RGB")
     except Exception as e:
-        print(f"분석 중 오류 발생: {str(e)}")
-        return jsonify({"error": "Image analysis failed", "details": str(e)}), 500
+        print(f"이미지 열기 실패: {e}")  # 🔥 디버그용 출력
+        return jsonify({"status": "error", "message": "Failed to process image"}), 400
 
-@app.route("/analyze/metadata", methods=["GET"])
-def metadata():
-    return jsonify({
-        "version": "1.2.0",
-        "model_id": "LUNG-CT-V2",
-        "last_updated": "2023-09-01",
-        "regulatory_status": "연구용(Research Use Only)",
-        "intended_use": "폐 질환 판독 보조",
-        "supported_modalities": ["X-Ray", "CT"],
-        "sensitivity": 0.92,
-        "specificity": 0.89
-    })
-    
+    inputs = extractor(images=image, return_tensors="pt").to(device)
+
+    with torch.no_grad():
+        outputs = model(**inputs)
+        probs = torch.nn.functional.softmax(outputs.logits, dim=1)
+        pred_class_idx = probs.argmax(dim=1).item()
+        confidence = probs[0, pred_class_idx].item()
+
+    predicted_label = model.config.id2label[pred_class_idx]
+
+    # 결과 생성
+    abnormality_score = int(confidence * 100)
+    flags = [predicted_label.lower()]
+
+    response = {
+        "model_type": "huggingface",
+        "processing_time_ms": round((time.time() - start_time) * 1000, 2),
+        "result": {
+            "abnormality_score": abnormality_score,
+            "confidence": f"{confidence:.2f}",
+            "flags": flags
+        },
+        "status": "success"
+    }
+
+    return jsonify(response), 200
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    app.run(host="0.0.0.0", port=5000)

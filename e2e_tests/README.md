@@ -1,61 +1,70 @@
-# LunitCare E2E Tests
+# LunitCare QA E2E 테스트
 
-이 디렉토리는 LunitCare 웹 응용 프로그램에 대한 엔드투엔드 테스트를 포함하고 있습니다.
+이 디렉토리는 Playwright를 사용한 LunitCare 의료 영상 분석 애플리케이션의 엔드투엔드(E2E) 테스트를 포함하고 있습니다.
 
-## 사전 요구 사항
+## 설치 및 설정
 
-- Node.js 14 이상
-- Python 환경에서 Streamlit UI 앱이 실행 중이어야 함
-- Mock API 서버가 실행 중이어야 함
-
-## 설치
-
-다음 명령어로 필요한 패키지를 설치합니다:
-
-```bash
-npm install
-npx playwright install
-```
+1. Node.js 설치(14.x 이상)
+2. 의존성 설치:
+   ```bash
+   cd e2e_tests
+   npm install
+   ```
+3. Playwright 브라우저 설치:
+   ```bash
+   npx playwright install
+   ```
 
 ## 테스트 실행
 
-다음 명령어로 테스트를 실행합니다:
-
+### 모든 브라우저에서 테스트 실행
 ```bash
 npm test
-# 또는
-npx playwright test
 ```
 
-## 테스트 보고서 확인
-
-테스트가 완료되면 HTML 보고서를 확인할 수 있습니다:
-
+### 특정 브라우저에서 테스트 실행
 ```bash
-npx playwright show-report
+# Chrome에서만 실행
+npm run test:chrome
+
+# Firefox에서만 실행
+npm run test:firefox
+
+# Safari에서만 실행
+npm run test:safari
+
+# 모바일 Chrome에서 실행
+npm run test:mobile
 ```
 
-## 구조
-
-- `tests/`: 테스트 케이스 파일
-- `pages/`: 페이지 객체 모델 파일
-- `playwright.config.ts`: Playwright 설정 파일
-
-## 주의 사항
-
-테스트를 실행하기 전에 반드시 다음 서버가 실행 중이어야 합니다:
-
-1. Streamlit UI 앱 (localhost:8501)
-2. Mock API 서버 (localhost:5000)
-
-실행 방법:
-
+### 디버그 모드로 테스트 실행
 ```bash
-# 한 터미널에서 UI 앱 실행
-cd <project_root>
-streamlit run ui_app.py
+npm run debug
+```
 
-# 다른 터미널에서 Mock 서버 실행
-cd <project_root>/mock_server
-python app.py
-``` 
+### 테스트 결과 리포트 보기
+```bash
+npm run report
+```
+
+## 테스트 파일 구조
+
+- `fixtures/` - 테스트에 사용되는 이미지 파일 등의 테스트 데이터
+- `*.spec.js` - 테스트 시나리오 파일
+- `playwright.config.js` - Playwright 설정
+
+## 사용 가능한 테스트 시나리오
+
+### 면역치료 반응 분석 시나리오
+`test_immunotherapy_analysis.spec.js` 파일에서 다음 시나리오를 테스트합니다:
+
+1. 병리 이미지 업로드
+2. AI 스코어 확인
+3. 치료 적합 판정 표시
+4. "환자 등록" 완료
+5. 시스템 로그 출력 확인
+
+## 테스트 데이터 추가
+
+테스트 이미지를 `fixtures/` 디렉토리에 추가해야 합니다:
+- `test_lung_cancer.jpg` - 폐암 테스트 이미지 
