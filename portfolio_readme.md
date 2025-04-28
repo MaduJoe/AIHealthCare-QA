@@ -34,7 +34,7 @@
 ---
 
 ## 📁 프로젝트 구성
-
+```bash
 lunitcare-qa/ 
 ├── api_tests/ # API 자동화 테스트 
 │ ├── test_analysis_api.py 
@@ -52,7 +52,7 @@ lunitcare-qa/
 ├── docs/ # Test Plan, 시나리오 문서 등 
 ├── .github/workflows/ci.yml # GitHub Actions 설정 
 └── README.md
-
+```
 ---
 
 ## 🧪 테스트 주요 내용
