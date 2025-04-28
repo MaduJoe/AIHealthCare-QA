@@ -81,7 +81,6 @@ lunitcare-qa/
 ## 📌 추가 문서
 
 - [📋 CHANGELOG.md](./CHANGELOG.md) — 개선 내역 요약
-- [📚 면접 대비 QA 시나리오 설명](./docs/qa_scenarios.md) — 테스트 설계 이유 및 전략
 
 ---
 
