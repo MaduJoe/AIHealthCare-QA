@@ -4,6 +4,8 @@
   "description": "LunitCare QA E2E 테스트 스위트",
   "scripts": {
     "test": "playwright test",
+    "test:watch": "npx chokidar \"tests/**/*.ts\" \"fixtures/**/*.ts\" \"pages/**/*.ts\" -c \"playwright test\"",
+    "test:ui": "playwright test --ui",
     "test:chrome": "playwright test --project=chromium",
     "test:firefox": "playwright test --project=firefox",
     "test:safari": "playwright test --project=webkit",
@@ -12,6 +14,8 @@
     "debug": "playwright test --debug"
   },
   "devDependencies": {
-    "@playwright/test": "^1.38.0"
+    "@playwright/test": "^1.38.0",
+    "@types/node": "^22.15.3",
+    "chokidar-cli": "^3.0.0"
   }
-} 
+}

@@ -1,3 +1,8 @@
+import warnings
+
+# Suppress FutureWarnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
 from flask import Flask, request, jsonify
 from transformers import AutoFeatureExtractor, AutoModelForImageClassification
 from PIL import Image
