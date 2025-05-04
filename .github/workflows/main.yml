@@ -1,16 +1,4 @@
-name: LunitCare QA CI/CD
 
-on:
-  push:
-    branches: [ main, development ]
-  pull_request:
-    branches: [ main, development ]
-  workflow_dispatch:
-
-jobs:
-
-  api-tests:
-    runs-on: ubuntu-latest
     name: API 테스트 실행
 
     steps:
