@@ -23,7 +23,7 @@ jobs:
         env:
           PYTHONUNBUFFERED: 1
         # 서버 시작 명령
-        cmd: >-
+        run: >-
           /bin/bash -c "
           pip install -r requirements.txt && 
           python app.py
@@ -73,7 +73,7 @@ jobs:
         env:
           PYTHONUNBUFFERED: 1
         # 서버 시작 명령
-        cmd: >-
+        run: >-
           /bin/bash -c "
           pip install -r requirements.txt && 
           python app.py
@@ -121,7 +121,7 @@ jobs:
         env:
           PYTHONUNBUFFERED: 1
         # 서버 시작 명령
-        cmd: >-
+        run: >-
           /bin/bash -c "
           pip install -r requirements.txt && 
           python app.py
@@ -137,7 +137,7 @@ jobs:
         env:
           PYTHONUNBUFFERED: 1
         # UI 서버 시작
-        cmd: >-
+        run: >-
           /bin/bash -c "
           pip install -r requirements.txt && 
           streamlit run ui_app.py
