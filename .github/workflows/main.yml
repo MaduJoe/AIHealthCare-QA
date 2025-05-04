@@ -71,7 +71,7 @@ jobs:
           --volume ${{ github.workspace }}/mock_server:/app
         env:
           PYTHONUNBUFFERED: 1
-        run: >-
+        command: >-
           /bin/bash -c "
           pip install -r requirements.txt &&
           python app.py
