@@ -13,7 +13,7 @@ jobs:
     name: API 테스트 실행
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: mock-server 실행
         run: |
@@ -40,7 +40,7 @@ jobs:
           pytest -v --html=report.html --cov=. --cov-report=xml
 
       - name: API 테스트 결과 업로드
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: api-test-report
           path: |
@@ -53,7 +53,7 @@ jobs:
     needs: api-tests
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: mock-server 실행
         run: |
@@ -80,7 +80,7 @@ jobs:
           pytest test_performance.py -v
 
       - name: 성능 테스트 결과 업로드
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: performance-test-results
           path: api_tests/performance_results
@@ -91,7 +91,7 @@ jobs:
     needs: api-tests
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: UI 서버 실행 (Streamlit)
         run: |
@@ -101,7 +101,7 @@ jobs:
             bash -c "pip install -r requirements.txt && streamlit run ui_app.py"
 
       - name: Node.js 설정
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
@@ -128,7 +128,7 @@ jobs:
           npm run coverage
 
       - name: E2E 테스트 결과 업로드
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: e2e-test-results
           path: |
@@ -143,7 +143,7 @@ jobs:
     needs: [api-tests, performance-tests, e2e-tests]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Python 설정
         uses: actions/setup-python@v4
@@ -170,22 +170,22 @@ jobs:
     needs: [api-tests, performance-tests, e2e-tests]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: API 테스트 결과 다운로드
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: api-test-report
           path: reports/api
 
       - name: 성능 테스트 결과 다운로드
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: performance-test-results
           path: reports/performance
 
       - name: E2E 테스트 결과 다운로드
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: e2e-test-results
           path: reports/e2e
@@ -198,7 +198,7 @@ jobs:
           cp -r reports/e2e/* combined-report/ || true
 
       - name: 통합 보고서 업로드
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: lunitcare-qa-report
           path: combined-report
