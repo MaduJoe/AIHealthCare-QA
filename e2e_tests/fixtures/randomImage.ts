@@ -1,3 +1,5 @@
+// - 테스트 데이터 준비 및 정리 로직을 담당하는 파일
+
 import * as fs from 'fs';
 import * as path from 'path';
 

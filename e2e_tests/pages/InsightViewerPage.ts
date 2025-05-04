@@ -1,3 +1,7 @@
+// -  Playwright의 POM 패턴을 충실히 따르고 있음.
+// - 테스트 로직과 페이지 동작을 명확히 분리하여 재사용성, 유지보수성을 높이기 위함.
+
+
 import { Page } from '@playwright/test';
 
 export class InsightViewerPage {
@@ -10,7 +14,7 @@ export class InsightViewerPage {
   async goto() {
     await this.page.goto('/');
     // Streamlit app takes a moment to initialize
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('networkidle'); // 웹앱 특성 기반 테스트 튜닝, Streamlit은 React에 비해 느리다.
   }
 
   async uploadImage(imagePath: string) {
@@ -62,7 +66,7 @@ export class InsightViewerPage {
   async downloadReport() {
     // 파일 다운로드를 기다리기 시작
     const [ download ] = await Promise.all([
-      this.page.waitForEvent('download'),  // 다운로드 이벤트를 기다림
+      this.page.waitForEvent('download'),  // 다운로드 이벤트를 기다림 (비동기 흐름 이해도 높음)
       this.page.getByText('결과 저장 (PDF)').click(),  // 버튼 클릭
     ]);
   
