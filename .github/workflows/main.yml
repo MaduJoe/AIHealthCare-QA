@@ -22,7 +22,7 @@ jobs:
           --volume ${{ github.workspace }}/mock_server:/app
         env:
           PYTHONUNBUFFERED: 1
-        command: >-
+        run: >-
           /bin/bash -c "
           pip install -r requirements.txt &&
           python app.py
@@ -71,7 +71,7 @@ jobs:
           --volume ${{ github.workspace }}/mock_server:/app
         env:
           PYTHONUNBUFFERED: 1
-        command: >-
+        run: >-
           /bin/bash -c "
           pip install -r requirements.txt &&
           python app.py
@@ -118,7 +118,7 @@ jobs:
           --volume ${{ github.workspace }}/mock_server:/app
         env:
           PYTHONUNBUFFERED: 1
-        command: >-
+        run: >-
           /bin/bash -c "
           pip install -r requirements.txt &&
           python app.py
@@ -133,7 +133,7 @@ jobs:
           --volume ${{ github.workspace }}:/app
         env:
           PYTHONUNBUFFERED: 1
-        command: >-
+        run: >-
           /bin/bash -c "
           pip install -r requirements.txt &&
           streamlit run ui_app.py
