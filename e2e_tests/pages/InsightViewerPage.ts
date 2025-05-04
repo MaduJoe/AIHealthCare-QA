@@ -31,13 +31,13 @@ export class InsightViewerPage {
   }
 
   async expectResultVisible() {
-    // 백분율(%) 형태로 표시된 점수를 찾음
+    // 백분율(%) 형태로 표시된 점수를 찾음 - 정규식 패턴을 사용하여 백분율을 포함하는 요소를 찾음
     const percentRegex = /\d+(\.\d+)?%/;
     
     // 컨텐츠 로드를 위해 짧게 대기
     await this.page.waitForTimeout(500);
     
-    // 엄격 모드 비활성화 + 좀 더 구체적인 셀렉터 사용
+    // 엄격 모드 비활성화 + 좀 더 구체적인 셀렉터 사용, 브라우저에서 직접 DOM을 쿼리하는 방식으로 변경
     const scoreLocator = this.page
       .locator('div:not(:has(div))')  // 하위 div가 없는 div만 타겟팅
       .filter({ hasText: percentRegex })
@@ -47,7 +47,7 @@ export class InsightViewerPage {
     
     // 찾은 점수 출력 (디버깅용)
     const scoreText = await scoreLocator.textContent();
-    console.log(`찾은 점수: ${scoreText?.trim()}`);
+    console.log(`찾은 점수: ${scoreText?.trim()}`); // 찾은 점수를 로그로 출력하여 디버깅 용이
     
     return scoreText;
   }

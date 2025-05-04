@@ -4,7 +4,7 @@ import subprocess
 import time
 import os
 import logging
-from pathlib import Path
+# from pathlib import Path
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, 
@@ -13,7 +13,9 @@ logger = logging.getLogger(__name__)
 
 # Define test constants
 API_BASE_URL = "http://localhost:5000"
-TEST_DATA_DIR = Path("api_tests/test_data")
+# TEST_DATA_DIR = Path("api_tests/test_data")
+TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), "test_data")  # 동적 절대 경로 방식
+
 
 @pytest.fixture(scope="session")
 def ensure_test_images():

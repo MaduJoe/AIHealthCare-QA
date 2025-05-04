@@ -26,6 +26,8 @@ api_tests/test_data/*.jpg
 api_tests/test_data/*.png
 api_tests/test_data/*.dcm
 !api_tests/test_data/README.md
+e2e_tests/test-results/
+e2e_tests/playwright-report/
 
 # Node.js
 node_modules/

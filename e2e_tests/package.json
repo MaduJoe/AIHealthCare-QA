@@ -11,11 +11,19 @@
     "test:safari": "playwright test --project=webkit",
     "test:mobile": "playwright test --project=mobile-chrome",
     "report": "playwright show-report",
-    "debug": "playwright test --debug"
+    "debug": "playwright test --debug",
+    "coverage": "node coverage-analysis.js",
+    "test:coverage": "playwright test && node coverage-analysis.js",
+    "test:parallel": "playwright test --workers=4",
+    "test:headed": "playwright test --headed",
+    "test:record": "playwright test --trace on",
+    "test:retry-flaky": "playwright test --retries=3"
   },
   "devDependencies": {
     "@playwright/test": "^1.38.0",
     "@types/node": "^22.15.3",
-    "chokidar-cli": "^3.0.0"
+    "chokidar-cli": "^3.0.0",
+    "glob": "^10.3.10",
+    "typescript": "^5.3.3"
   }
 }

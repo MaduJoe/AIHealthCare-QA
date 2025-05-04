@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # Mock API 서버
+  mock-server:
+    build:
+      context: ./mock_server
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./mock_server:/app
+    networks:
+      - lunitcare-network
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+  
+  # Streamlit UI 앱
+  ui-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/app
+    depends_on:
+      - mock-server
+    networks:
+      - lunitcare-network
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+      - MOCK_API_URL=http://mock-server:5000
+    command: streamlit run ui_app.py
+
+  # E2E 테스트 서비스 (필요시 실행)
+  e2e-tests:
+    build:
+      context: ./e2e_tests
+      dockerfile: Dockerfile
+    volumes:
+      - ./e2e_tests:/app
+    depends_on:
+      - mock-server
+      - ui-app
+    networks:
+      - lunitcare-network
+    environment:
+      - BASE_URL=http://ui-app:8501
+    command: npm run test:parallel
+
+  # API 테스트 서비스 (필요시 실행)
+  api-tests:
+    build:
+      context: ./api_tests
+      dockerfile: Dockerfile
+    volumes:
+      - ./api_tests:/app
+    depends_on:
+      - mock-server
+    networks:
+      - lunitcare-network
+    environment:
+      - API_URL=http://mock-server:5000
+    command: pytest -v
+
+networks:
+  lunitcare-network:
+    driver: bridge 

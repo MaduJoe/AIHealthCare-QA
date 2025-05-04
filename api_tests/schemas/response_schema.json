@@ -1,27 +1,40 @@
 {
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
+  "required": ["status", "result", "processing_time_ms"],
   "properties": {
     "status": {
-      "type": "string"
+      "type": "string",
+      "enum": ["success", "error"]
     },
     "result": {
       "type": "object",
+      "required": ["abnormality_score", "confidence", "flags"],
       "properties": {
         "abnormality_score": {
-          "type": "number"
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "confidence": {
+          "type": ["number", "string"],
+          "minimum": 0,
+          "maximum": 1
         },
         "flags": {
-          "type": "array"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
-      },
-      "required": [
-        "abnormality_score",
-        "flags"
-      ]
+      }
+    },
+    "processing_time_ms": {
+      "type": "number",
+      "minimum": 0
+    },
+    "message": {
+      "type": "string"
     }
-  },
-  "required": [
-    "status",
-    "result"
-  ]
+  }
 }

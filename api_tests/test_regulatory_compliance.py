@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 
 API_URL = "http://localhost:5000/analyze"
 METADATA_URL = "http://localhost:5000/analyze/metadata"
-TEST_DATA_DIR = "api_tests/test_data"
+TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), "test_data")
 
 # Regulatory requirements
 REGULATORY_REQUIREMENTS = {

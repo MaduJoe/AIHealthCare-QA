@@ -5,7 +5,7 @@ import os
 from unittest.mock import patch
 
 API_URL = "http://localhost:5000/analyze"
-TEST_DATA_DIR = "api_tests/test_data"
+TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), "test_data")
 
 # Clinical reference ranges based on medical literature
 CLINICAL_THRESHOLDS = {
@@ -49,14 +49,16 @@ def test_clinical_finding_accuracy():
     location, and characterization
     """
     image_file = f"{TEST_DATA_DIR}/abnormal_chest_xray.jpg"
+    print(f"image_file: {image_file}")
     ground_truth = get_ground_truth(image_file)
     
-    response = requests.post(API_URL, files={"image": open(image_file, "rb")})
+    response = requests.post(API_URL, files={"file": open(image_file, "rb")})
     assert response.status_code == 200
     result = response.json()
-    
+    print(f"result: {result}")
+
     # Check if abnormality detection matches ground truth
-    has_detected_abnormality = result["abnormality_score"] > 0.5
+    has_detected_abnormality = result["result"]["abnormality_score"] > 0.5
     assert has_detected_abnormality == ground_truth["has_abnormality"]
     
     if ground_truth["has_abnormality"]:
