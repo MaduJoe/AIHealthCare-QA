@@ -1,4 +1,15 @@
+name: LunitCare QA CI/CD
 
+on:
+  push:
+    branches: [ main, development ]
+  pull_request:
+    branches: [ main, development ]
+  workflow_dispatch:
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
     name: API 테스트 실행
 
     steps:
@@ -26,23 +37,16 @@
       - name: API 테스트 실행
         working-directory: api_tests
         run: |
-          pytest -v --html=report.html --cov=. --cov-report=xml || true || true
-
-      - name: 결과물 폴더 준비
-        if: always()
-        run: |
-          mkdir -p upload
-          if [ -f api_tests/report.html ]; then cp api_tests/report.html upload/; fi
-          if [ -f api_tests/coverage.xml ]; then cp api_tests/coverage.xml upload/; fi
+          # 테스트 실행 시 오류가 발생해도 리포트 파일을 만들도록 || true 추가
+          pytest -v --html=report.html --cov=. --cov-report=xml || true
 
       - name: API 테스트 결과 업로드
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: api-test-report
-          path: upload
-
-
+          path: |
+            api_tests/report.html
+            api_tests/coverage.xml
 
   performance-tests:
     runs-on: ubuntu-latest
@@ -74,22 +78,13 @@
       - name: 성능 테스트 실행
         working-directory: api_tests
         run: |
-          pytest test_performance.py -v || true || true
-
-      - name: 성능 테스트 결과 복사
-        if: always()
-        run: |
-          mkdir -p perf_upload
-          if [ -d api_tests/performance_results ]; then cp -r api_tests/performance_results/* perf_upload/; fi
+          pytest test_performance.py -v
 
       - name: 성능 테스트 결과 업로드
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: performance-test-results
-          path: perf_upload
-
-
+          path: api_tests/performance_results
 
   e2e-tests:
     runs-on: ubuntu-latest
@@ -126,15 +121,14 @@
       - name: E2E 테스트 실행
         working-directory: e2e_tests
         run: |
-          npm run test:parallel || true || true
+          npm run test:parallel
 
       - name: 테스트 커버리지 분석
         working-directory: e2e_tests
         run: |
-          npm run coverage || true || true
+          npm run coverage
 
       - name: E2E 테스트 결과 업로드
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: e2e-test-results
@@ -142,7 +136,6 @@
             e2e_tests/playwright-report
             e2e_tests/test-results
             e2e_tests/coverage-report
-
 
   build-and-deploy:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -182,23 +175,19 @@
 
       - name: API 테스트 결과 다운로드
         uses: actions/download-artifact@v4
-        continue-on-error: true
         with:
           name: api-test-report
           path: reports/api
-
-
+        continue-on-error: true # download-artifact 실패 방지 (선택적으로 추가)
+        
       - name: 성능 테스트 결과 다운로드
         uses: actions/download-artifact@v4
-        continue-on-error: true
         with:
           name: performance-test-results
           path: reports/performance
-        continue-on-error: true
 
       - name: E2E 테스트 결과 다운로드
         uses: actions/download-artifact@v4
-        continue-on-error: true
         with:
           name: e2e-test-results
           path: reports/e2e
