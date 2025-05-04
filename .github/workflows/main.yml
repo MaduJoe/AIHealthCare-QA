@@ -11,7 +11,7 @@ jobs:
   api-tests:
     runs-on: ubuntu-latest
     name: API 테스트 실행
-    
+
     services:
       mock-server:
         image: python:3.9
@@ -22,33 +22,32 @@ jobs:
           --volume ${{ github.workspace }}/mock_server:/app
         env:
           PYTHONUNBUFFERED: 1
-        # 서버 시작 명령
         command: >-
           /bin/bash -c "
-          pip install -r requirements.txt && 
+          pip install -r requirements.txt &&
           python app.py
           "
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Python 설정
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
           cache: 'pip'
-      
+
       - name: 의존성 설치
         working-directory: api_tests
-        command: |
+        run: |
           pip install -r requirements.txt
           pip install pytest-html pytest-cov
-      
+
       - name: API 테스트 실행
         working-directory: api_tests
-        command: |
+        run: |
           pytest -v --html=report.html --cov=. --cov-report=xml
-          
+
       - name: API 테스트 결과 업로드
         uses: actions/upload-artifact@v3
         with:
@@ -56,12 +55,12 @@ jobs:
           path: |
             api_tests/report.html
             api_tests/coverage.xml
-  
+
   performance-tests:
     runs-on: ubuntu-latest
     name: 성능 테스트 실행
     needs: api-tests
-    
+
     services:
       mock-server:
         image: python:3.9
@@ -72,44 +71,43 @@ jobs:
           --volume ${{ github.workspace }}/mock_server:/app
         env:
           PYTHONUNBUFFERED: 1
-        # 서버 시작 명령
         command: >-
           /bin/bash -c "
-          pip install -r requirements.txt && 
+          pip install -r requirements.txt &&
           python app.py
           "
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Python 설정
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
           cache: 'pip'
-      
+
       - name: 의존성 설치
         working-directory: api_tests
-        command: |
+        run: |
           pip install -r requirements.txt
           pip install matplotlib numpy pytest-html tqdm
-      
+
       - name: 성능 테스트 실행
         working-directory: api_tests
-        command: |
+        run: |
           pytest test_performance.py -v
-      
+
       - name: 성능 테스트 결과 업로드
         uses: actions/upload-artifact@v3
         with:
           name: performance-test-results
           path: api_tests/performance_results
-  
+
   e2e-tests:
     runs-on: ubuntu-latest
     name: E2E 테스트 실행
     needs: api-tests
-    
+
     services:
       mock-server:
         image: python:3.9
@@ -120,13 +118,12 @@ jobs:
           --volume ${{ github.workspace }}/mock_server:/app
         env:
           PYTHONUNBUFFERED: 1
-        # 서버 시작 명령
         command: >-
           /bin/bash -c "
-          pip install -r requirements.txt && 
+          pip install -r requirements.txt &&
           python app.py
           "
-      
+
       ui-service:
         image: python:3.9
         ports:
@@ -136,43 +133,42 @@ jobs:
           --volume ${{ github.workspace }}:/app
         env:
           PYTHONUNBUFFERED: 1
-        # UI 서버 시작
         command: >-
           /bin/bash -c "
-          pip install -r requirements.txt && 
+          pip install -r requirements.txt &&
           streamlit run ui_app.py
           "
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Node.js 설정
         uses: actions/setup-node@v3
         with:
           node-version: '18'
           cache: 'npm'
           cache-dependency-path: e2e_tests/package-lock.json
-      
+
       - name: 의존성 설치
         working-directory: e2e_tests
-        command: |
+        run: |
           npm ci
-      
+
       - name: Playwright 브라우저 설치
         working-directory: e2e_tests
-        command: |
+        run: |
           npx playwright install --with-deps
-      
+
       - name: E2E 테스트 실행
         working-directory: e2e_tests
-        command: |
+        run: |
           npm run test:parallel
-      
+
       - name: 테스트 커버리지 분석
         working-directory: e2e_tests
-        command: |
+        run: |
           npm run coverage
-      
+
       - name: E2E 테스트 결과 업로드
         uses: actions/upload-artifact@v3
         with:
@@ -181,70 +177,70 @@ jobs:
             e2e_tests/playwright-report
             e2e_tests/test-results
             e2e_tests/coverage-report
-  
+
   build-and-deploy:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     name: 빌드 및 배포
     needs: [api-tests, performance-tests, e2e-tests]
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Python 설정
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
-      
+
       - name: 의존성 설치
-        command: |
+        run: |
           pip install -r requirements.txt
-      
+
       - name: Docker 빌드
-        command: |
+        run: |
           echo "Docker 이미지 빌드 및 배포 단계입니다."
           echo "실제 환경에서는 여기에 Docker 빌드 및 배포 스크립트가 들어갑니다."
-      
+
       - name: 배포 알림
-        command: |
+        run: |
           echo "LunitCare QA 시스템이 성공적으로 배포되었습니다."
-  
+
   test-report:
     runs-on: ubuntu-latest
     name: 테스트 보고서 생성
     if: always()
     needs: [api-tests, performance-tests, e2e-tests]
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: API 테스트 결과 다운로드
         uses: actions/download-artifact@v3
         with:
           name: api-test-report
           path: reports/api
-      
+
       - name: 성능 테스트 결과 다운로드
         uses: actions/download-artifact@v3
         with:
           name: performance-test-results
           path: reports/performance
-      
+
       - name: E2E 테스트 결과 다운로드
         uses: actions/download-artifact@v3
         with:
           name: e2e-test-results
           path: reports/e2e
-      
+
       - name: 보고서 통합
-        command: |
+        run: |
           mkdir -p combined-report
           cp -r reports/api/* combined-report/ || true
           cp -r reports/performance/* combined-report/ || true
           cp -r reports/e2e/* combined-report/ || true
-      
+
       - name: 통합 보고서 업로드
         uses: actions/upload-artifact@v3
         with:
           name: lunitcare-qa-report
-          path: combined-report 
+          path: combined-report
