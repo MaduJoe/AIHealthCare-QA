@@ -23,7 +23,7 @@ jobs:
         env:
           PYTHONUNBUFFERED: 1
         # 서버 시작 명령
-        run: >-
+        command: >-
           /bin/bash -c "
           pip install -r requirements.txt && 
           python app.py
@@ -40,13 +40,13 @@ jobs:
       
       - name: 의존성 설치
         working-directory: api_tests
-        run: |
+        command: |
           pip install -r requirements.txt
           pip install pytest-html pytest-cov
       
       - name: API 테스트 실행
         working-directory: api_tests
-        run: |
+        command: |
           pytest -v --html=report.html --cov=. --cov-report=xml
           
       - name: API 테스트 결과 업로드
@@ -73,7 +73,7 @@ jobs:
         env:
           PYTHONUNBUFFERED: 1
         # 서버 시작 명령
-        run: >-
+        command: >-
           /bin/bash -c "
           pip install -r requirements.txt && 
           python app.py
@@ -90,13 +90,13 @@ jobs:
       
       - name: 의존성 설치
         working-directory: api_tests
-        run: |
+        command: |
           pip install -r requirements.txt
           pip install matplotlib numpy pytest-html tqdm
       
       - name: 성능 테스트 실행
         working-directory: api_tests
-        run: |
+        command: |
           pytest test_performance.py -v
       
       - name: 성능 테스트 결과 업로드
@@ -121,7 +121,7 @@ jobs:
         env:
           PYTHONUNBUFFERED: 1
         # 서버 시작 명령
-        run: >-
+        command: >-
           /bin/bash -c "
           pip install -r requirements.txt && 
           python app.py
@@ -137,7 +137,7 @@ jobs:
         env:
           PYTHONUNBUFFERED: 1
         # UI 서버 시작
-        run: >-
+        command: >-
           /bin/bash -c "
           pip install -r requirements.txt && 
           streamlit run ui_app.py
@@ -155,22 +155,22 @@ jobs:
       
       - name: 의존성 설치
         working-directory: e2e_tests
-        run: |
+        command: |
           npm ci
       
       - name: Playwright 브라우저 설치
         working-directory: e2e_tests
-        run: |
+        command: |
           npx playwright install --with-deps
       
       - name: E2E 테스트 실행
         working-directory: e2e_tests
-        run: |
+        command: |
           npm run test:parallel
       
       - name: 테스트 커버리지 분석
         working-directory: e2e_tests
-        run: |
+        command: |
           npm run coverage
       
       - name: E2E 테스트 결과 업로드
@@ -197,16 +197,16 @@ jobs:
           python-version: '3.9'
       
       - name: 의존성 설치
-        run: |
+        command: |
           pip install -r requirements.txt
       
       - name: Docker 빌드
-        run: |
+        command: |
           echo "Docker 이미지 빌드 및 배포 단계입니다."
           echo "실제 환경에서는 여기에 Docker 빌드 및 배포 스크립트가 들어갑니다."
       
       - name: 배포 알림
-        run: |
+        command: |
           echo "LunitCare QA 시스템이 성공적으로 배포되었습니다."
   
   test-report:
@@ -237,7 +237,7 @@ jobs:
           path: reports/e2e
       
       - name: 보고서 통합
-        run: |
+        command: |
           mkdir -p combined-report
           cp -r reports/api/* combined-report/ || true
           cp -r reports/performance/* combined-report/ || true
