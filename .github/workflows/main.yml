@@ -12,24 +12,15 @@ jobs:
     runs-on: ubuntu-latest
     name: API 테스트 실행
 
-    services:
-      mock-server:
-        image: python:3.9
-        ports:
-          - 5000:5000
-        options: >-
-          --workdir /app
-          --volume ${{ github.workspace }}/mock_server:/app
-        env:
-          PYTHONUNBUFFERED: 1
-        run: >-
-          /bin/bash -c "
-          pip install -r requirements.txt &&
-          python app.py
-          "
-
     steps:
       - uses: actions/checkout@v3
+
+      - name: mock-server 실행
+        run: |
+          docker run -d --name mock-server -p 5000:5000 \
+            -v ${{ github.workspace }}/mock_server:/app \
+            -w /app python:3.9 \
+            bash -c "pip install -r requirements.txt && python app.py"
 
       - name: Python 설정
         uses: actions/setup-python@v4
@@ -61,24 +52,15 @@ jobs:
     name: 성능 테스트 실행
     needs: api-tests
 
-    services:
-      mock-server:
-        image: python:3.9
-        ports:
-          - 5000:5000
-        options: >-
-          --workdir /app
-          --volume ${{ github.workspace }}/mock_server:/app
-        env:
-          PYTHONUNBUFFERED: 1
-        command: >-
-          /bin/bash -c "
-          pip install -r requirements.txt &&
-          python app.py
-          "
-
     steps:
       - uses: actions/checkout@v3
+
+      - name: mock-server 실행
+        run: |
+          docker run -d --name mock-server -p 5000:5000 \
+            -v ${{ github.workspace }}/mock_server:/app \
+            -w /app python:3.9 \
+            bash -c "pip install -r requirements.txt && python app.py"
 
       - name: Python 설정
         uses: actions/setup-python@v4
@@ -108,39 +90,15 @@ jobs:
     name: E2E 테스트 실행
     needs: api-tests
 
-    services:
-      mock-server:
-        image: python:3.9
-        ports:
-          - 5000:5000
-        options: >-
-          --workdir /app
-          --volume ${{ github.workspace }}/mock_server:/app
-        env:
-          PYTHONUNBUFFERED: 1
-        run: >-
-          /bin/bash -c "
-          pip install -r requirements.txt &&
-          python app.py
-          "
-
-      ui-service:
-        image: python:3.9
-        ports:
-          - 8501:8501
-        options: >-
-          --workdir /app
-          --volume ${{ github.workspace }}:/app
-        env:
-          PYTHONUNBUFFERED: 1
-        run: >-
-          /bin/bash -c "
-          pip install -r requirements.txt &&
-          streamlit run ui_app.py
-          "
-
     steps:
       - uses: actions/checkout@v3
+
+      - name: UI 서버 실행 (Streamlit)
+        run: |
+          docker run -d --name ui-service -p 8501:8501 \
+            -v ${{ github.workspace }}:/app \
+            -w /app python:3.9 \
+            bash -c "pip install -r requirements.txt && streamlit run ui_app.py"
 
       - name: Node.js 설정
         uses: actions/setup-node@v3
