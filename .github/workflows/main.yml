@@ -58,7 +58,7 @@ jobs:
 
   performance-tests:
     runs-on: ubuntu-latest
-    name: 성능 테스트
+    name: API 테스트
     needs: api-tests
 
     steps:
