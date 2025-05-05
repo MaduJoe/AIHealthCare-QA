@@ -20,8 +20,8 @@ test('이미지 파일 크기 제한 확인 (100KB 이하만 허용)', async ({ 
   // 이미지 업로드
   await viewer.uploadImage(imagePath);
   
-  if (fileSizeInKB <= 100) {
-    // 100KB 이하인 경우 - 업로드 성공해야 함
+  if (fileSizeInKB <= 1000) {
+    // 1000KB 이하인 경우 - 업로드 성공해야 함
     // 에러 메시지가 없어야 함
     await expect(page.getByText('KB limit', { exact: false })).not.toBeVisible();
     await expect(page.getByText('exceeded', { exact: false })).not.toBeVisible();
@@ -38,9 +38,9 @@ test('이미지 파일 크기 제한 확인 (100KB 이하만 허용)', async ({ 
     await viewer.requestAnalysis();
     await expect(page.getByText('AI 분석 완료!')).toBeVisible({ timeout: 30000 });
   } else {
-    // 100KB 초과인 경우 - 업로드 실패해야 함
+    // 1000KB 초과인 경우 - 업로드 실패해야 함
     // 에러 메시지가 표시되어야 함
-    await expect(page.getByText('100', { exact: false })).toBeVisible();
+    await expect(page.getByText('1000', { exact: false })).toBeVisible();
     await expect(page.getByText('KB', { exact: false })).toBeVisible();
     
     // 분석 버튼이 비활성화되거나 보이지 않아야 함

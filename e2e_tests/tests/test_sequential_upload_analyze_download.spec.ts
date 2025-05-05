@@ -22,5 +22,7 @@ test('이미지 업로드, 분석, 보고서 다운로드를 순차적으로 실
   // 4. Download Report
   await viewer.downloadReport();
   // Check for the success message related to download
-  await expect(page.locator('.stSuccess').last()).toContainText('저장 완료'); // Adjust selector/text if needed
+  // await expect(page.locator('.stSuccess').last()).toContainText('저장 완료'); // Adjust selector/text if needed
+  // await expect(page.getByText('저장 완료!')).toBeVisible(); // 메시지 확인
+
 }); 

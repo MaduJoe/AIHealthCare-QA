@@ -205,20 +205,20 @@ with tabs[0]:  # 📊 이미지 분석 탭
                 evaluation = "면역치료 적합" if abnormality_score > 50 else "면역치료 부적합"
 
                 report_text = f"""
-LunitCare AI 분석 결과 보고서
------------------------------
+                LunitCare AI 분석 결과 보고서
+                -----------------------------
 
-🗓️ 분석 날짜: {time.strftime("%Y-%m-%d")}
-👤 환자 ID: {patient_id}
-👤 환자 이름: {patient_name}
-📅 생년월일: {birthdate}
+                🗓️ 분석 날짜: {time.strftime("%Y-%m-%d")}
+                👤 환자 ID: {patient_id}
+                👤 환자 이름: {patient_name}
+                📅 생년월일: {birthdate}
 
-🔎 분석 결과
-- 비정상 점수: {abnormality_score}%
-- 발견된 소견: {flag_list}
+                🔎 분석 결과
+                - 비정상 점수: {abnormality_score}%
+                - 발견된 소견: {flag_list}
 
-🩺 치료 적합성 평가
-- 결과: {evaluation}
+                🩺 치료 적합성 평가
+                - 결과: {evaluation}
                 """
                 return report_text.strip()
 
@@ -228,8 +228,12 @@ LunitCare AI 분석 결과 보고서
                 data=report_text,
                 file_name=f"AI_분석결과_{time.strftime('%Y%m%d')}.txt",
                 mime="text/plain",
-                use_container_width=False
+                use_container_width=False,
+                # on_click=lambda: st.session_state.update({"download_success": True})
             )
+
+            # if st.session_state.get("download_success"):
+            #     st.success("저장 완료!")
 
 with tabs[1]:  # 📋 결과 히스토리 탭
     st.subheader("분석 히스토리 (예시 데이터)")
