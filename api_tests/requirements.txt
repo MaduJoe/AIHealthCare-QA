@@ -3,3 +3,7 @@ requests==2.31.0
 jsonschema==4.20.0
 pytest-html==4.1.1
 pytest-xdist==3.5.0  # For parallel test execution 
+matplotlib 
+numpy 
+pytest-html 
+tqdm
