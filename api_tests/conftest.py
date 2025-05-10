@@ -4,7 +4,10 @@ import subprocess
 import time
 import os
 import logging
-# from pathlib import Path
+from pathlib import Path
+import json
+from _pytest.config import Config
+from _pytest.reports import TestReport
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, 
@@ -13,9 +16,24 @@ logger = logging.getLogger(__name__)
 
 # Define test constants
 API_BASE_URL = "http://localhost:5000"
-# TEST_DATA_DIR = Path("api_tests/test_data")
-TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), "test_data")  # 동적 절대 경로 방식
+# 경로 처리를 위해 Path 객체 사용
+TEST_DATA_DIR = Path(os.path.dirname(__file__)) / "test_data"
 
+# 요구사항 추적을 위한 전역 저장소
+REQUIREMENT_TEST_RESULTS = {}
+
+# ISO 13485 요구사항 ID 데코레이터
+def req_id(*ids):
+    """
+    데코레이터: 테스트 함수에 요구사항 ID를 연결합니다.
+    이 데코레이터를 사용하여 각 테스트와 요구사항 간의 추적성을 확보합니다.
+    
+    사용 예:
+    @pytest.mark.req_id("REQ-001", "REQ-002")
+    def test_something():
+        assert True
+    """
+    return pytest.mark.req_id(ids)
 
 @pytest.fixture(scope="session")
 def ensure_test_images():
@@ -132,4 +150,70 @@ def invalid_file():
     file_path = TEST_DATA_DIR / "invalid_file.txt"
     if not file_path.exists():
         pytest.skip(f"Test file {file_path} not found")
-    return str(file_path) 
+    return str(file_path)
+
+# ISO 13485 요구사항 추적을 위한 플러그인
+class RequirementTracePlugin:
+    """
+    테스트 결과를 캡처하여 요구사항 추적 정보를 생성하는 pytest 플러그인
+    """
+    def __init__(self, config):
+        self.config = config
+        self.requirement_results = {}
+        self.test_to_req_map = {}
+    
+    @pytest.hookimpl(hookwrapper=True)
+    def pytest_runtest_protocol(self, item, nextitem):
+        """테스트 시작 전 요구사항 ID 매핑 준비"""
+        for marker in item.iter_markers(name="req_id"):
+            req_ids = marker.args[0]
+            for req_id in req_ids:
+                if req_id not in self.requirement_results:
+                    self.requirement_results[req_id] = {"tests": [], "status": "NotRun"}
+                # 요구사항 ID와 테스트 이름 매핑 저장
+                test_name = item.name
+                self.test_to_req_map[test_name] = req_ids
+                self.requirement_results[req_id]["tests"].append(test_name)
+        
+        yield
+    
+    @pytest.hookimpl(hookwrapper=True)
+    def pytest_runtest_makereport(self, item, call):
+        """테스트 실행 후 결과를 요구사항 추적에 반영"""
+        outcome = yield
+        report = outcome.get_result()
+        
+        if report.when == "call":  # 테스트 실행 단계에서만 처리
+            test_name = item.name
+            if test_name in self.test_to_req_map:
+                req_ids = self.test_to_req_map[test_name]
+                for req_id in req_ids:
+                    if report.passed:
+                        if self.requirement_results[req_id]["status"] != "Failed":
+                            self.requirement_results[req_id]["status"] = "Passed"
+                    else:
+                        self.requirement_results[req_id]["status"] = "Failed"
+    
+    def pytest_sessionfinish(self, session, exitstatus):
+        """테스트 세션 종료 시 결과 저장"""
+        global REQUIREMENT_TEST_RESULTS
+        REQUIREMENT_TEST_RESULTS = self.requirement_results
+        
+        # JSON 파일로 결과 저장
+        results_dir = Path(os.path.dirname(__file__)) / ".." / "scripts" / "temp"
+        results_dir.mkdir(exist_ok=True, parents=True)
+        
+        with open(results_dir / "req_test_results.json", "w") as f:
+            json.dump(self.requirement_results, f, indent=2)
+        
+        logger.info(f"요구사항 추적 결과가 저장되었습니다: {results_dir / 'req_test_results.json'}")
+
+
+def pytest_configure(config):
+    """pytest 설정 시 요구사항 추적 플러그인 등록"""
+    # 요구사항 ID 마커 등록
+    config.addinivalue_line("markers", "req_id(ids): ISO 13485 요구사항 추적을 위한 ID 매핑")
+    
+    # 플러그인 등록
+    plugin = RequirementTracePlugin(config)
+    config.pluginmanager.register(plugin, "requirement_trace_plugin") 

@@ -11,6 +11,6 @@
     "forceConsistentCasingInFileNames": true,
     "types": ["node", "playwright"]
   },
-  "include": ["**/*.ts"],
+  "include": ["**/*.ts", "playwright.config copy.js"],
   "exclude": ["node_modules"]
 } 

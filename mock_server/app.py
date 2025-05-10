@@ -116,11 +116,6 @@ def index():
         "endpoints": ["/analyze", "/health", "/analyze/error", "/analyze/metadata"]
     }), 200
 
-# 이렇게 하면 /analyze 대신 더 가벼운 API로 확인 가능:
-@app.route("/healthz")
-def health_check():
-    return "ok", 200
-
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     host = os.environ.get("HOST", "0.0.0.0")

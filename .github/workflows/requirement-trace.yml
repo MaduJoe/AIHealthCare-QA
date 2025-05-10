@@ -1,0 +1,102 @@
+name: ISO 13485 요구사항 추적 테스트
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'api_tests/**'
+      - 'e2e_tests/**'
+      - 'docs/requirements.md'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:  # 수동 실행 옵션
+
+jobs:
+  traceability-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+    
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r api_tests/requirements.txt
+    
+    - name: Install Playwright dependencies
+      run: |
+        cd e2e_tests
+        npm ci
+        npx playwright install --with-deps
+    
+    - name: Start Mock API Server
+      run: |
+        cd mock_server
+        python app.py &
+        sleep 5  # 서버 시작 대기
+      env:
+        PORT: 5000
+        HOST: 0.0.0.0
+    
+    - name: Start UI Server
+      run: |
+        python ui_app.py &
+        sleep 5  # 서버 시작 대기
+      env:
+        PORT: 8501
+        API_URL: http://localhost:5000
+    
+    - name: Run API Tests with Requirements Tracing
+      run: |
+        pytest api_tests -v
+    
+    - name: Run E2E Tests
+      run: |
+        cd e2e_tests
+        npx playwright test --reporter=json --output=../scripts/temp/e2e_results.json
+    
+    - name: Generate Traceability Matrix
+      run: |
+        python scripts/generate_trace_report.py
+    
+    - name: Upload Traceability Matrix as Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: traceability-matrix
+        path: docs/traceability_matrix.md
+    
+    - name: Check for Test Failures
+      id: check_failures
+      run: |
+        python -c "
+import re
+with open('docs/traceability_matrix.md', 'r') as f:
+    content = f.read()
+    failed_count = len(re.findall(r'❌ Fail', content))
+    if failed_count > 0:
+        print('::set-output name=has_failures::true')
+        print(f'요구사항 {failed_count}개가 테스트 실패했습니다.')
+    else:
+        print('::set-output name=has_failures::false')
+        print('모든 테스트가 통과했습니다!')
+"
+    
+    - name: Commit Traceability Matrix (Automated)
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add docs/traceability_matrix.md
+        git commit -m "자동 업데이트: 요구사항 추적 매트릭스 [CI SKIP]" || echo "No changes to commit"
+        git push 

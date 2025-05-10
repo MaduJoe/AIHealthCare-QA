@@ -1,0 +1,40 @@
+# LunitCare QA 요구사항 추적 매트릭스 - 요구사항 ID ↔ 테스트 케이스 ↔ 결과(Pass/Fail)를 매핑한 표
+
+본 문서는 요구사항과 테스트 케이스 간의 추적성을 보여주는 매트릭스입니다.
+(이 파일은 `generate_trace_report.py` 스크립트에 의해 자동으로 갱신됩니다)
+
+*마지막 업데이트: 2025-05-10*
+
+## 추적 매트릭스
+
+| 요구사항 ID | 설명 | 테스트 케이스 | 결과 | 비고 |
+|-------------|------|--------------|------|------|
+| REQ-001 | 이미지를 업로드할 수 있어야 한다 | test_valid_image_upload<br>test_ui_upload_component_exists | ✅ Pass<br>✅ Pass | |
+| REQ-002 | 분석 후 'AI 분석 완료!' 메시지가 떠야 한다 | test_analysis_completion_message | ✅ Pass | |
+| REQ-003 | 분석 응답시간이 평균 2초 이내여야 한다 | test_api_response_time<br>test_ui_response_time | ❌ Fail<br>✅ Pass | API 응답 2.3초 |
+| REQ-004 | 이미지 분석 결과의 정확도가 90% 이상이어야 한다 | test_model_accuracy | ✅ Pass | 정확도 93.5% |
+| REQ-005 | 비정상 영상을 정상적으로 감지해야 한다 | test_abnormal_detection_accuracy | ✅ Pass | |
+| REQ-006 | 정상 영상을 비정상으로 잘못 감지하는 비율이 10% 이하여야 한다 | test_normal_detection_accuracy | ✅ Pass | 오탐지율 7.2% |
+| REQ-007 | 모델 메타데이터가 규제 요구사항을 준수해야 한다 | test_model_metadata_compliance | ✅ Pass | |
+| REQ-008 | 버전 정보가 시맨틱 버전 형식을 따라야 한다 | test_model_versioning_compliance | ✅ Pass | |
+| REQ-009 | 동일 이미지에 대한 분석 결과가 일관적이어야 한다 | test_consistency_across_multiple_runs | ✅ Pass | |
+| REQ-010 | UI가 직관적으로 사용 가능해야 한다 | test_initial_ui_elements | ✅ Pass | |
+| REQ-011 | 페이지 제목이 "Lunit Insight CXR"를 포함해야 한다 | test_page_load_and_title | ❌ Fail | 현재 타이틀: "LunitCare - AI 의료 영상 분석" |
+| REQ-012 | 유효하지 않은 이미지 파일 업로드 시 적절한 오류 메시지를 표시해야 한다 | test_invalid_file_upload | ✅ Pass | |
+| REQ-013 | API 호출 시 인증 정보를 요구해야 한다 | test_api_authentication | ⚠️ 미테스트 | 테스트 코드 개발 중 |
+| REQ-014 | 대용량 이미지(5MB 이상)도 처리할 수 있어야 한다 | test_large_image_handling | ✅ Pass | |
+| REQ-015 | 여러 브라우저에서 동일하게 동작해야 한다 | *E2E 테스트 다중 브라우저 설정* | ⚠️ 부분통과 | Safari에서 이슈 발견 |
+
+## 테스트 커버리지 요약
+
+- **총 요구사항 수**: 15
+- **테스트 케이스로 커버된 요구사항**: 14 (93.3%)
+- **테스트 통과 요구사항**: 12 (80%)
+- **테스트 실패 요구사항**: 2 (13.3%)
+- **미테스트 요구사항**: 1 (6.7%)
+
+## 개선 필요 항목
+
+1. **REQ-003** (응답시간) - API 응답 시간 최적화 필요
+2. **REQ-011** (페이지 제목) - 타이틀 수정 또는 테스트 기대값 조정 필요
+3. **REQ-013** (API 인증) - 테스트 케이스 구현 필요 
