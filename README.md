@@ -136,6 +136,9 @@ python mock_server/app.py
 # API 테스트 실행
 cd api_tests && pytest -v
 
+# E2E 테스트 실행
+cd e2e_tests && npm run test
+
 # 성능 테스트 실행
 cd api_tests && pytest test_performance.py -v
 
