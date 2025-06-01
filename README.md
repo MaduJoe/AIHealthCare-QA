@@ -66,7 +66,7 @@ sequenceDiagram
 ## 핵심 구성 요소
 
 ```bash
-LunitCare QA 시스템
+AI HealthCare QA 시스템
 ├── mock_server/         # 의료 영상 분석 API (Flask)
 ├── api_tests/           # API 테스트 스위트 (pytest)
 │   └── test_performance.py   # 성능 및 부하 테스트
@@ -174,7 +174,7 @@ GitHub Actions 워크플로우는 main/development 브랜치 푸시 또는 PR �
 
 ## 결론
 
-LunitCare QA 프로젝트는 의료 AI 시스템의 품질을 체계적으로 검증하는 종합적인 QA 프레임워크를 구현했습니다. 
+AI HealthCare QA 프로젝트는 의료 AI 시스템의 품질을 체계적으로 검증하는 종합적인 QA 프레임워크를 구현했습니다. 
 고도화된 기능을 통해 더욱 강력한 테스트 자동화, 성능 분석 및 배포 파이프라인을 갖추게 되었습니다.
 
 의료 AI의 신뢰성과 안전성을 높이는데 기여하고자 하며, 사용자 중심의 철저한 검증을 통해 의료 AI 제품의 품질을 보장하는 역할을 수행하고자 합니다.
